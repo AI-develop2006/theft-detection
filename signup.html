@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>AuraGuard AI | Staff Registration</title>
+    <style>
+        :root {
+            --primary: #10b981;
+            --primary-hover: #059669;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --shadow: rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 20px;
+            color: var(--text-main);
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.12) 0%, transparent 70%);
+            top: -250px;
+            left: -250px;
+            border-radius: 50%;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 520px;
+            border: 1px solid var(--border);
+            box-shadow: 0 20px 60px var(--shadow);
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .logo-badge {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--primary) 0%, #059669 100%);
+            border-radius: 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin-bottom: 12px;
+            box-shadow: 0 6px 16px rgba(16, 185, 129, 0.25);
+        }
+
+        h2 {
+            margin: 0 0 6px 0;
+            font-weight: 800;
+            font-size: 26px;
+            color: var(--text-main);
+        }
+
+        p.subtitle {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin: 0;
+            font-weight: 500;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            color: var(--text-main);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: 10px;
+            border: 2px solid var(--border);
+            background: var(--bg);
+            color: var(--text-main);
+            box-sizing: border-box;
+            font-size: 15px;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+        }
+
+        input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--primary) 0%, #059669 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: all 0.3s;
+            font-size: 15px;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .back-btn {
+            width: 100%;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            margin-top: 16px;
+            cursor: pointer;
+            font-size: 14px;
+            padding: 12px;
+            transition: color 0.2s;
+            font-weight: 500;
+        }
+
+        .back-btn:hover {
+            color: var(--primary);
+        }
+
+        .info-note {
+            background: #f0fdf4;
+            border-left: 3px solid var(--primary);
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            font-size: 13px;
+            color: #065f46;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <div class="header">
+            <div class="logo-badge">⚡</div>
+            <h2>AuraGuard Staff</h2>
+            <p class="subtitle">Official Registration for Electricity Collectors</p>
+        </div>
+
+        <div class="info-note">
+            <strong>Note:</strong> This registration is exclusively for authorized field staff and bill collectors.
+        </div>
+
+        <div class="input-group">
+            <label>Full Name</label>
+            <input type="text" id="fullName" placeholder="Enter your full name">
+        </div>
+
+        <div class="grid">
+            <div class="input-group">
+                <label>Username (ID)</label>
+                <input type="text" id="user" placeholder="Staff ID">
+            </div>
+            <div class="input-group">
+                <label>Password</label>
+                <input type="password" id="pass" placeholder="••••••••">
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label>Mobile Number</label>
+            <input type="tel" id="mobile" placeholder="+91 XXXXX XXXXX">
+        </div>
+
+        <div class="grid">
+            <div class="input-group">
+                <label>Date of Birth</label>
+                <input type="date" id="dob">
+            </div>
+            <div class="input-group">
+                <label>Assigned Place/Region</label>
+                <input type="text" id="place" placeholder="Chennai, TN">
+            </div>
+        </div>
+
+        <button class="btn" id="signupBtn" onclick="handleSignup()">REGISTER OFFICIAL STAFF</button>
+        <button class="back-btn" onclick="location.href='index.html'">Already registered? Login here</button>
+    </div>
+
+    <script>
+        async function handleSignup() {
+            // ... your existing code to get values from inputs ...
+            const data = {
+                full_name: document.getElementById('fullName').value,
+                username: document.getElementById('user').value,
+                password: document.getElementById('pass').value,
+                mobile: document.getElementById('mobile').value,
+                dob: document.getElementById('dob').value,
+                place: document.getElementById('place').value
+            };
+
+            try {
+                const response = await fetch('http://127.0.0.1:8000/signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    // --- ADD THIS INTEGRATION BLOCK ---
+                    // Save the data so the profile page can see it immediately
+                    localStorage.setItem('staffName', data.full_name);
+                    localStorage.setItem('staffUser', data.username);
+                    localStorage.setItem('staffPlace', data.place);
+                    localStorage.setItem('staffMobile', data.mobile);
+                    localStorage.setItem('staffDob', data.dob);
+
+                    alert("Registration Successful! Welcome to the team.");
+                    window.location.href = 'index.html'; // Go to the Audit Tool
+                } else {
+                    const err = await response.json();
+                    alert("Error: " + err.detail);
+                }
+            } catch (e) {
+                alert("Server Error");
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AuraGuard AI | Dynamic Network Map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        :root {
+            --primary: #10b981;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding-top: 72px;
+        }
+
+        /* --- NAVIGATION --- */
+        nav {
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            right: 0; 
+            height: 72px;
+            background: rgba(255, 255, 255, 0.95); 
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between;
+            padding: 0 40px; 
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary) 0%, #059669 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: white;
+            box-shadow: 0 4px 10px rgba(16, 185, 129, 0.25);
+        }
+
+        .nav-links {
+            display: flex; 
+            gap: 24px; 
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-muted); 
+            text-decoration: none;
+            font-size: 15px; 
+            font-weight: 600;
+            transition: 0.2s;
+            position: relative;
+        }
+
+        .nav-links a:hover, 
+        .nav-links a.active { 
+            color: var(--primary); 
+        }
+
+        .nav-links a.active::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--primary);
+            border-radius: 2px;
+        }
+
+        .logout-link {
+            color: #ef4444 !important;
+        }
+
+        .logout-link:hover {
+            color: #dc2626 !important;
+        }
+
+        /* --- MAP LAYOUT --- */
+        .main-container {
+            display: grid;
+            grid-template-columns: 1fr 360px;
+            height: calc(100vh - 72px);
+        }
+
+        #map { 
+            width: 100%; 
+            height: 100%; 
+            border-right: 1px solid var(--border);
+        }
+
+        /* --- SIDEBAR --- */
+        .sidebar {
+            background: var(--card);
+            padding: 32px;
+            overflow-y: auto;
+        }
+
+        .sidebar h3 {
+            margin: 0 0 8px 0;
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text);
+        }
+
+        .sidebar > p {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin: 0 0 28px 0;
+            line-height: 1.6;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dbeafe 100%);
+            padding: 24px; 
+            border-radius: 16px;
+            margin-bottom: 24px; 
+            border: 1px solid var(--border);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+
+        .stat-card > div:first-child {
+            font-size: 12px; 
+            color: var(--text-muted); 
+            font-weight: 800; 
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-card > div:last-child {
+            font-size: 32px; 
+            font-weight: 900;
+            color: var(--text);
+        }
+
+        .legend { 
+            font-size: 13px; 
+            margin-top: 28px; 
+        }
+
+        .legend h4 {
+            margin: 0 0 16px 0;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .legend-item { 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+            margin-bottom: 12px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .dot { 
+            height: 14px; 
+            width: 14px; 
+            border-radius: 50%; 
+            border: 2px solid white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+        }
+
+        .btn-refresh {
+            width: 100%; 
+            padding: 14px; 
+            background: linear-gradient(135deg, var(--primary) 0%, #059669 100%);
+            color: white; 
+            border: none; 
+            border-radius: 12px;
+            font-weight: 700; 
+            cursor: pointer; 
+            margin-bottom: 24px;
+            font-size: 15px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(16, 185, 129, 0.25);
+        }
+
+        .btn-refresh:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(16, 185, 129, 0.35);
+        }
+
+        .btn-refresh:active {
+            transform: translateY(0);
+        }
+
+        .divider {
+            border: 0; 
+            border-top: 1px solid var(--border); 
+            margin: 28px 0;
+        }
+
+        .info-note {
+            font-size: 12px; 
+            color: var(--text-muted); 
+            line-height: 1.6;
+            background: #f8fafc;
+            padding: 16px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <a href="index.html" class="logo">
+            <div class="logo-icon">⚡</div>
+            <span>AuraGuard AI</span>
+        </a>
+        <div class="nav-links">
+            <a href="index.html">Audit Tool</a>
+            <a href="history.html">History</a>
+            <a href="map.html" class="active">Network Map</a>
+            <a href="login.html" class="logout-link">Logout</a>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <div id="map"></div>
+
+        <div class="sidebar">
+            <h3>Intelligence Map</h3>
+            <p>Real-time grid visualization based on recent field audits.</p>
+
+            <div class="stat-card">
+                <div>Mapped Audits</div>
+                <div id="auditCount">0</div>
+            </div>
+
+            <button class="btn-refresh" onclick="syncMap()">Refresh Grid Data</button>
+
+            <div class="legend">
+                <h4>Legend</h4>
+                <div class="legend-item">
+                    <div class="dot" style="background: #ef4444;"></div> 
+                    High Risk (>80%)
+                </div>
+                <div class="legend-item">
+                    <div class="dot" style="background: #facc15;"></div> 
+                    Suspicious (50-80%)
+                </div>
+                <div class="legend-item">
+                    <div class="dot" style="background: #10b981;"></div> 
+                    Normal (<50%)
+                </div>
+                <div class="legend-item">
+                    <div class="dot" style="background: #3b82f6;"></div> 
+                    Grid Substation
+                </div>
+            </div>
+
+            <hr class="divider">
+            
+            <div class="info-note">
+                <strong>Note:</strong> Markers represent exact GPS coordinates from the field mobile app during audits.
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // 1. Initialize Map (Chennai Coordinates)
+        const map = L.map('map').setView([13.0827, 80.2707], 12);
+        const substationPos = [13.0827, 80.2707];
+
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+            attribution: 'AuraGuard AI Security'
+        }).addTo(map);
+
+        // Add Main Substation Marker
+        L.circleMarker(substationPos, {
+            radius: 14, 
+            fillColor: "#3b82f6", 
+            color: "#fff", 
+            weight: 3, 
+            fillOpacity: 1
+        }).addTo(map).bindPopup("<b>Chennai Main Substation</b><br>Status: Active");
+
+        // 2. Sync with Database
+        async function syncMap() {
+            try {
+                const response = await fetch('http://127.0.0.1:8000/history');
+                const audits = await response.json();
+                
+                document.getElementById('auditCount').innerText = audits.length;
+
+                audits.forEach(audit => {
+                    let color = "#10b981"; // Green
+                    if (audit.risk_score > 80) color = "#ef4444"; // Red
+                    else if (audit.risk_score >= 50) color = "#facc15"; // Yellow
+
+                    const marker = L.circleMarker([audit.lat, audit.lng], {
+                        radius: 9,
+                        fillColor: color,
+                        color: "#fff",
+                        weight: 2.5,
+                        fillOpacity: 0.9
+                    }).addTo(map);
+
+                    marker.bindPopup(`
+                        <div style="color: #1e293b;">
+                            <b style="font-size: 14px;">Audit ID: #${audit.id}</b><br>
+                            Risk: <b>${audit.risk_score}%</b><br>
+                            Load: ${audit.avg_current} kWh<br>
+                            <span style="font-size: 11px; color: #64748b;">${new Date(audit.timestamp).toLocaleString()}</span>
+                        </div>
+                    `);
+
+                    // Optional: Line to substation
+                    L.polyline([substationPos, [audit.lat, audit.lng]], {
+                        color: '#94a3b8', 
+                        weight: 1, 
+                        dashArray: '5, 5', 
+                        opacity: 0.4
+                    }).addTo(map);
+                });
+            } catch (e) {
+                console.error("Map sync error:", e);
+            }
+        }
+
+        // Run sync on load
+        window.onload = syncMap;
+    </script>
+</body>
+</html>

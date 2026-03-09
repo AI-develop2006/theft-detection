@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AuraGuard AI | Audit Logs</title>
+    <style>
+        :root {
+            --primary: #10b981;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #facc15;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text-main);
+            margin: 0;
+            padding-top: 90px;
+        }
+
+        /* --- NAVIGATION --- */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 72px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary) 0%, #059669 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: white;
+            box-shadow: 0 4px 10px rgba(16, 185, 129, 0.25);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 15px;
+            font-weight: 600;
+            transition: 0.2s;
+            position: relative;
+        }
+
+        .nav-links a.active {
+            color: var(--primary);
+        }
+
+        .nav-links a.active::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--primary);
+            border-radius: 2px;
+        }
+
+        /* --- LOADING ANIMATION --- */
+        #loader {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(248, 250, 252, 0.98);
+            backdrop-filter: blur(8px);
+            z-index: 9999;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-main);
+            font-weight: bold;
+        }
+
+        .spinner {
+            width: 64px;
+            height: 64px;
+            border: 5px solid var(--border);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 24px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* --- CONTENT --- */
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .page-header {
+            margin-bottom: 32px;
+        }
+
+        .page-header h1 {
+            margin: 0 0 8px 0;
+            font-size: 32px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .page-header p {
+            color: var(--text-muted);
+            margin: 0;
+            font-size: 16px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        .stat-mini-card {
+            background: white;
+            padding: 24px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+
+        .stat-mini-card span {
+            display: block;
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-mini-card b {
+            font-size: 28px;
+            color: var(--text-main);
+            font-weight: 800;
+        }
+
+        .log-card {
+            background: white;
+            padding: 24px;
+            border-radius: 16px;
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+
+        .log-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            border-color: var(--primary);
+        }
+
+        .tag {
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 800;
+            color: white;
+        }
+
+        .btn-refresh {
+            background: linear-gradient(135deg, var(--primary) 0%, #059669 100%);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(16, 185, 129, 0.25);
+        }
+
+        .btn-refresh:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(16, 185, 129, 0.35);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            background: white;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="loader">
+        <div class="spinner"></div>
+        <div id="loaderText" style="letter-spacing: 1px; text-transform: uppercase; font-size: 14px;">Initializing
+            Secure Connection...</div>
+    </div>
+
+    <nav>
+        <a href="index.html" class="logo">
+            <div class="logo-icon">⚡</div>
+            <span>AuraGuard AI</span>
+        </a>
+        <div class="nav-links">
+            <a href="index.html">New Audit</a>
+            <a href="history.html" class="active">History</a>
+            <a href="map.html">Network Map</a>
+            <button class="btn-refresh" onclick="refreshWithAnimation()">Refresh Logs</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h1>Audit History</h1>
+            <p>Accessing encrypted logs from the central grid database.</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-mini-card">
+                <span>Total Records</span>
+                <b id="totalCount">0</b>
+            </div>
+            <div class="stat-mini-card">
+                <span>Theft Detected</span>
+                <b id="flagCount" style="color: var(--danger);">0</b>
+            </div>
+            <div class="stat-mini-card">
+                <span>System Health</span>
+                <b style="color: var(--success);">OPTIMAL</b>
+            </div>
+        </div>
+
+        <div id="logList">
+        </div>
+    </div>
+
+    <script>
+        // Main function that handles the 3-second visual "loading"
+        async function refreshWithAnimation() {
+            const loader = document.getElementById('loader');
+            const loaderText = document.getElementById('loaderText');
+
+            // Show Loader
+            loader.style.display = 'flex';
+
+            // Intelligence simulation text
+            setTimeout(() => { loaderText.innerText = "Querying Database..."; }, 800);
+            setTimeout(() => { loaderText.innerText = "Running Anomaly Verification..."; }, 1800);
+            setTimeout(() => { loaderText.innerText = "Finalizing Records..."; }, 2600);
+
+            // Force wait 3 seconds
+            await new Promise(resolve => setTimeout(resolve, 3000));
+
+            // Fetch and show data
+            await loadHistory();
+
+            // Hide Loader
+            loader.style.display = 'none';
+            loaderText.innerText = "Initializing Secure Connection..."; // Reset for next time
+        }
+
+        async function loadHistory() {
+            const container = document.getElementById('logList');
+            const totalB = document.getElementById('totalCount');
+            const flagB = document.getElementById('flagCount');
+
+            try {
+                const response = await fetch('http://127.0.0.1:8000/history');
+                const logs = await response.json();
+
+                if (logs.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📋</div>
+                            <h3 style="margin: 0 0 8px 0; color: var(--text-main);">No audit records found</h3>
+                            <p style="color: var(--text-muted); margin: 0;">Start by creating your first audit from the Audit Tool</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = "";
+                let flags = 0;
+
+                logs.forEach(log => {
+                    if (log.prediction === 1) flags++;
+
+                    const div = document.createElement('div');
+                    div.className = 'log-card';
+
+                    let tagColor = 'var(--success)';
+                    if (log.risk_score > 80) tagColor = 'var(--danger)';
+                    else if (log.risk_score >= 50) tagColor = 'var(--warning)';
+
+                    const date = new Date(log.timestamp).toLocaleString();
+
+                    div.innerHTML = `
+                        <div>
+                            <div style="font-size: 11px; color: var(--text-muted); font-weight: 800; margin-bottom: 6px;">${date}</div>
+                            <div style="font-weight: 800; font-size: 18px; margin: 4px 0; color: ${log.prediction === 1 ? 'var(--danger)' : 'var(--text-main)'}">
+                                ${log.prediction === 1 ? '⚠️ THEFT DETECTED' : '✅ NORMAL LOAD'}
+                            </div>
+                            <div style="font-size: 13px; color: var(--text-muted); font-weight: 500;">
+                                Avg: ${log.avg_current} kWh | Profile: Lvl ${log.house_size} | Inactive: ${log.zero_days} Days
+                            </div>
+                        </div>
+                        <div class="tag" style="background: ${tagColor}">${log.risk_score}% RISK</div>
+                    `;
+                    container.appendChild(div);
+                });
+
+                totalB.innerText = logs.length;
+                flagB.innerText = flags;
+
+            } catch (e) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">⚠️</div>
+                        <h3 style="margin: 0 0 8px 0; color: var(--danger);">Connection Error</h3>
+                        <p style="color: var(--text-muted); margin: 0;">Ensure Python Backend is active and try again</p>
+                    </div>
+                `;
+            }
+        }
+
+        // --- THE CRITICAL CHANGE ---
+        // Instead of calling loadHistory() immediately, we call the animation function
+        window.onload = refreshWithAnimation;
+    </script>
+</body>
+
+</html>

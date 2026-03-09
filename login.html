@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>AuraGuard AI | Login</title>
+    <style>
+        :root {
+            --primary: #10b981;
+            --primary-hover: #059669;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --shadow: rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: linear-gradient(135deg, #e0f2fe 0%, #f0fdf4 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            color: var(--text-main);
+            position: relative;
+            overflow: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.15) 0%, transparent 70%);
+            top: -200px;
+            right: -200px;
+            border-radius: 50%;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
+            bottom: -150px;
+            left: -150px;
+            border-radius: 50%;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 48px 40px;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+            border: 1px solid var(--border);
+            box-shadow: 0 20px 60px var(--shadow);
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo-container {
+            margin-bottom: 32px;
+        }
+
+        .logo-icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, var(--primary) 0%, #059669 100%);
+            border-radius: 16px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            margin-bottom: 16px;
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.25);
+        }
+
+        h1 {
+            margin: 0 0 8px 0;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            font-size: 28px;
+            color: var(--text-main);
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            margin: 0 0 32px 0;
+            font-weight: 500;
+            font-size: 15px;
+        }
+
+        input {
+            width: 100%;
+            padding: 16px;
+            margin: 12px 0;
+            border-radius: 12px;
+            border: 2px solid var(--border);
+            background: var(--bg);
+            color: var(--text-main);
+            box-sizing: border-box;
+            font-size: 15px;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+        }
+
+        input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--primary) 0%, #059669 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s;
+            font-size: 15px;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .register-link {
+            font-size: 14px;
+            margin-top: 28px;
+            color: var(--text-muted);
+        }
+
+        .register-link a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+
+        .divider {
+            margin: 24px 0;
+            text-align: center;
+            position: relative;
+        }
+
+        .divider::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 50%;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .divider span {
+            background: var(--card-bg);
+            padding: 0 12px;
+            position: relative;
+            color: var(--text-muted);
+            font-size: 13px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <div class="logo-container">
+            <div class="logo-icon">⚡</div>
+            <h1>AuraGuard</h1>
+            <p class="subtitle">Field Audit Portal</p>
+        </div>
+
+        <div id="loginForm">
+            <input type="text" id="user" placeholder="Username" autocomplete="username">
+            <input type="password" id="pass" placeholder="Password" autocomplete="current-password">
+            <button class="btn" id="loginBtn" onclick="handleLogin()">SECURE LOGIN</button>
+        </div>
+
+        <div class="divider">
+            <span>New to AuraGuard?</span>
+        </div>
+
+        <p class="register-link"><a href="signup.html">Register as Field Staff →</a></p>
+    </div>
+
+    <script>
+        // Allow pressing "Enter" to login
+        document.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') { handleLogin(); }
+        });
+
+        async function handleLogin() {
+            const username = document.getElementById('user').value;
+            const password = document.getElementById('pass').value;
+
+            try {
+                const response = await fetch('http://127.0.0.1:8000/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+
+                    // INTEGRATION: Store all backend data in LocalStorage
+                    localStorage.setItem('staffName', data.full_name);
+                    localStorage.setItem('staffUser', data.user);
+                    localStorage.setItem('staffPlace', data.place);
+                    localStorage.setItem('staffMobile', data.mobile);
+                    localStorage.setItem('staffDob', data.dob);
+
+                    // Redirect to the new index.html (Audit Tool)
+                    window.location.href = 'index.html';
+                } else {
+                    alert("Login Failed: Incorrect Username or Password");
+                }
+            } catch (e) {
+                alert("Server Error: Ensure Python backend is running.");
+            }
+        }
+    </script>
+</body>
+
+</html>
